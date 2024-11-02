@@ -13,7 +13,7 @@ Table benefits [headercolor: #3498DB] {
   last_updated timestamp [not null, default: `now()`]
 
   indexes {
-    id [unique, type: hash]
+    id [unique, name: benefits, type: hash]
   }
 }
 
@@ -27,7 +27,7 @@ Table vesting_schedules [headercolor: #3498DB] {
   last_updated timestamp [not null, default: `now()`]
 
   indexes {
-    id [unique, type: hash]
+    id [unique, name: vesting_schedules, type: hash]
   }
 }
 
@@ -38,7 +38,7 @@ Table company [headercolor: #3498DB] {
   stock_id integer [ref: - stock.id]
 
   indexes {
-    id [unique, type: hash]
+    id [unique, name: company, type: hash]
   }
 }
 
@@ -54,7 +54,7 @@ Table location [headercolor: #3498DB] {
   last_updated timestamp [not null, default: `now()`]
 
   indexes {
-    id [unique, type: hash]
+    id [unique, name: location, type: hash]
   }
 }
 
@@ -68,7 +68,7 @@ Table stock [headercolor: #3498DB] {
   last_updated timestamp [not null, default: `now()`]
 
   indexes {
-    id [unique, type: hash]
+    id [unique, name: stock, type: hash]
   }
 }
 
@@ -83,9 +83,9 @@ Table stock_history [headercolor: #3498DB] {
   created_at timestamp [not null, default: `now()`]
 
   indexes {
-    id [unique, type: hash]
-    (`lower(stock_id)`, date, high) [unique, name: 'daily_index', note: 'Daily KPIs after close', type: hash]
-    (`lower(stock_id)`, date, low) [unique, name: 'daily_index', note: 'Daily KPIs after close', type: hash]
+    id [unique, name: stock_history, type: hash]
+    (`lower(stock_id)`, date, high) [unique, name: 'daily_high', note: 'Daily KPIs after close', type: hash]
+    (`lower(stock_id)`, date, low) [unique, name: 'daily_low', note: 'Daily KPIs after close', type: hash]
   }
 }
 
@@ -102,6 +102,6 @@ Table position [headercolor: #3498DB] {
   created_at timestamp [not null, default: `now()`]
 
   indexes {
-    id [unique, type: hash]
+    id [unique, name: position, type: hash]
   }
 }
