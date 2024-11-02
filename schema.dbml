@@ -1,81 +1,107 @@
 // Use DBML to define your database structure
 // Docs: https://dbml.dbdiagram.io/docs
 
-Table benefits {
-  id varchar [primary key]
-  vestint_schedule_id foreign_key
-  health integer
-  retirement integer
-  pto integer
-  espp_discount integer
-  espp_diff integer
-  education integer
+Table benefits [headercolor: #3498DB] {
+  id integer [pk, unique]
+  vesting_schedule_id integer [not null, ref: - vesting_schedules.id]
+  health integer [not null, default: 0]
+  retirement integer [not null, default: 0]
+  pto integer [not null, default: 0]
+  espp_discount integer [not null, default: 0]
+  espp_diff integer [not null, default: 0]
+  education integer [not null, default: 5250]
+  last_updated timestamp [not null, default: `now()`]
+
+  indexes {
+    id [unique, type: hash]
+  }
 }
 
-Table vesting_schedules {
-  id integer [primary key]
-  y1 integer
-  y2 integer
-  y3 integer
-  y4 integer
-  y5 integer
+Table vesting_schedules [headercolor: #3498DB] {
+  id integer [pk, unique]
+  y1 integer [ default: 0, note: 'Year 1 Vested Percentage' ]
+  y2 integer [ default: 0, note: 'Year 2 Vested Percentage' ]
+  y3 integer [ default: 0, note: 'Year 3 Vested Percentage' ]
+  y4 integer [ default: 0, note: 'Year 4 Vested Percentage' ]
+  y5 integer [ default: 0, note: 'Year 5 Vested Percentage' ]
+  last_updated timestamp [not null, default: `now()`]
+
+  indexes {
+    id [unique, type: hash]
+  }
 }
 
-Table company {
-  id integer [primary key]
+Table company [headercolor: #3498DB] {
+  id integer [pk, unique]
+  name varchar [not null, unique]
+  benefits_id integer [not null, unique, ref: - benefits.id]
+  stock_id integer [ref: - stock.id]
+
+  indexes {
+    id [unique, type: hash]
+  }
+}
+
+Table location [headercolor: #3498DB] {
+  id integer [pk, unique]
   name varchar
-  benefits_id foreign_key
-  stock_id foreign_key
-}
-
-Table location {
-  id integer [primary key]
-  name varchar
-  street_1 varchar
+  street_1 varchar [not null]
   street_2 varchar
-  city varchar
-  state char(2)
-  zipcode integer
+  city varchar [not null]
+  state char(2) [not null]
+  zipcode integer [not null]
+  cola_index integer
+  last_updated timestamp [not null, default: `now()`]
+
+  indexes {
+    id [unique, type: hash]
+  }
 }
 
-Table stock {
-  id integer [primary key]
-  ticker varchar
-  market varchar
-  last_close integer
-  last_open integer
-  historical_index_id foreign_key
-  created_at timestamp
+Table stock [headercolor: #3498DB] {
+  id integer [pk, unique]
+  ticker varchar [not null, unique]
+  market varchar [not null, unique]
+  last_close integer [not null]
+  last_open integer [not null]
+  historical_index_id integer [not null]
+  last_updated timestamp [not null, default: `now()`]
+
+  indexes {
+    id [unique, type: hash]
+  }
 }
 
-Table stock_history {
-  id integer [primary key]
-  stock_id foreign_key
-  date varchar
-  high integer
-  low integer
-  open integer
-  close integer
-  created_at timestamp
+Table stock_history [headercolor: #3498DB] {
+  id integer [pk, unique]
+  stock_id integer [not null, ref: < stock.id ]
+  date varchar [not null]
+  high integer [not null]
+  low integer [not null]
+  open integer [not null]
+  close integer [not null]
+  created_at timestamp [not null, default: `now()`]
+
+  indexes {
+    id [unique, type: hash]
+    (`lower(stock_id)`, date, high) [unique, name: 'daily_index', note: 'Daily KPIs after close', type: hash]
+    (`lower(stock_id)`, date, low) [unique, name: 'daily_index', note: 'Daily KPIs after close', type: hash]
+  }
 }
 
-Table position {
-  id integer [primary key]
-  company_id varchar
-  title varchar
-  base integer
+Table position [headercolor: #3498DB] {
+  id integer [pk, unique]
+  company_id varchar [not null, ref: < company.id]
+  title varchar [not null]
+  base integer [not null]
   rsu integer
   performance_bonus integer
   sign_on_bonus integer
-  status varchar
-  location_id foreign_key
-  created_at timestamp
-}
+  status varchar [not null]
+  location_id integer [not null, ref: < location.id]
+  created_at timestamp [not null, default: `now()`]
 
-Ref: benefits.vestint_schedule_id - vesting_schedules.id // one-to-one
-Ref: company.benefits_id - benefits.id // one-to-one
-Ref: company.stock_id - stock.id // one-to-one
-  
-Ref: position.location_id > location.id // many-to-one
-Ref: position.company_id > company.id // many-to-one
-Ref: stock_history.stock_id > stock.id // many-to-one
+  indexes {
+    id [unique, type: hash]
+  }
+}
