@@ -84,8 +84,8 @@ Table stock_history [headercolor: #3498DB] {
 
   indexes {
     id [unique, name: stock_history, type: hash]
-    (`lower(stock_id)`, date, high) [unique, name: 'daily_high', note: 'Daily KPIs after close', type: hash]
-    (`lower(stock_id)`, date, low) [unique, name: 'daily_low', note: 'Daily KPIs after close', type: hash]
+    (stock_id, date, high) [unique, name: 'daily_high', note: 'Daily KPIs after close', type: hash]
+    (stock_id, date, low) [unique, name: 'daily_low', note: 'Daily KPIs after close', type: hash]
   }
 }
 
