@@ -1,0 +1,81 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table benefits {
+  id varchar [primary key]
+  vestint_schedule_id foreign_key
+  health integer
+  retirement integer
+  pto integer
+  espp_discount integer
+  espp_diff integer
+  education integer
+}
+
+Table vesting_schedules {
+  id integer [primary key]
+  y1 integer
+  y2 integer
+  y3 integer
+  y4 integer
+  y5 integer
+}
+
+Table company {
+  id integer [primary key]
+  name varchar
+  benefits_id foreign_key
+  stock_id foreign_key
+}
+
+Table location {
+  id integer [primary key]
+  name varchar
+  street_1 varchar
+  street_2 varchar
+  city varchar
+  state char(2)
+  zipcode integer
+}
+
+Table stock {
+  id integer [primary key]
+  ticker varchar
+  market varchar
+  last_close integer
+  last_open integer
+  historical_index_id foreign_key
+  created_at timestamp
+}
+
+Table stock_history {
+  id integer [primary key]
+  stock_id foreign_key
+  date varchar
+  high integer
+  low integer
+  open integer
+  close integer
+  created_at timestamp
+}
+
+Table position {
+  id integer [primary key]
+  company_id varchar
+  title varchar
+  base integer
+  rsu integer
+  performance_bonus integer
+  sign_on_bonus integer
+  status varchar
+  location_id foreign_key
+  created_at timestamp
+}
+
+Ref: benefits.vestint_schedule_id - vesting_schedules.id // one-to-one
+Ref: company.benefits_id - benefits.id // one-to-one
+Ref: company.stock_id - stock.id // one-to-one
+  
+Ref: position.location_id > location.id // many-to-one
+Ref: position.company_id > company.id // many-to-one
+Ref: stock_history.stock_id > stock.id // many-to-one
